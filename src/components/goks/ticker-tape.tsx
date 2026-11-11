@@ -120,8 +120,8 @@ export function TickerTape({ now }: { now: number | null }) {
         ticker === "TATAMOTORS"
           ? "TMPV.NS"
           : ticker === "ZOMATO"
-          ? "ETERNAL.NS"
-          : `${ticker}.NS`;
+            ? "ETERNAL.NS"
+            : `${ticker}.NS`;
       const snap = rated.find((r) => r.symbol === sym);
       const base = BASE_PRICES[ticker] ?? BASE_PRICES[sym] ?? 500;
       return {
@@ -172,9 +172,8 @@ export function TickerTape({ now }: { now: number | null }) {
       {/* Fixed Market Status Pill on Left */}
       <div className="flex shrink-0 items-center gap-2 border-r border-line bg-panel px-3 py-1.5 z-20 shadow-md">
         <span
-          className={`inline-block h-2 w-2 rounded-full ${
-            status.isOpen ? "bg-sage animate-pulse" : "bg-muted"
-          }`}
+          className={`inline-block h-2 w-2 rounded-full ${status.isOpen ? "bg-sage animate-pulse" : "bg-muted"
+            }`}
         />
         <span
           suppressHydrationWarning

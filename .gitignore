@@ -33,5 +33,6 @@ __pycache__/
 .pytest_cache/
 
 # System files
+*.lnk
 .DS_Store
 Thumbs.db

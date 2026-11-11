@@ -272,3 +272,4 @@ export function AccessGate({ children }: AccessGateProps) {
     </div>
   );
 }
+
