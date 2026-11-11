@@ -430,7 +430,7 @@ function Desk() {
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="font-display text-2xl font-bold leading-none tracking-tight text-paper md:text-3xl">
-                  GOKS TERMINAL
+                  VAJRA TERMINAL
                 </h1>
                 <span className="rounded border border-brass/30 bg-brass/15 px-1.5 py-0.5 font-mono text-[9px] font-bold text-brass uppercase">
                   PRO

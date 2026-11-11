@@ -1,6 +1,6 @@
-# GOKS CHART
+# VAJRA TERMINAL
 
-Institutional-style Indian equity research desk for NSE and BSE. Delayed prices, 29 sections, paper trading only. Built on TanStack Start (React 19, Vite, Tailwind v4, zustand, TanStack Query, Recharts).
+Institutional-grade quantitative equity research workstation for NSE and BSE India. Real-time Indian indices, delayed multi-source prices, 29 algorithmic sections, 3-horizon position advisor, Camarilla breakout levels, FII/DII flow heatmaps, Monte Carlo portfolio optimization, strict Pydantic validation, and live Power BI data-feed. Built on TanStack Start (React 19, Vite, Tailwind v4, zustand, TanStack Query, Recharts).
 
 ## Run
 

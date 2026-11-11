@@ -3,17 +3,17 @@ import { AuthProvider } from "@/lib/auth/provider";
 import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import appCss from "../styles.css?url";
 
-const APP_NAME = "GOKS TERMINAL";
+const APP_NAME = "VAJRA TERMINAL";
 
 export const Route = createRootRoute({
   head: () => ({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "GOKS TERMINAL · Institutional Equity Workstation" },
+      { title: "VAJRA TERMINAL · Institutional Quantitative Workstation" },
       {
         name: "description",
-        content: "GOKS TERMINAL — Institutional equity & quantitative workstation for NSE and BSE India.",
+        content: "VAJRA TERMINAL — Institutional quantitative equity workstation for NSE and BSE India.",
       },
       { name: "theme-color", content: "#101614" },
     ],
