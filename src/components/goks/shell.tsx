@@ -404,27 +404,59 @@ function Desk() {
       <header className="sticky top-0 z-30 border-b border-line bg-ink">
         <div className="flex flex-wrap items-end justify-between gap-3 px-3 py-3 md:px-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-brass/60 bg-gradient-to-br from-[#16201b] to-[#090e0b] shadow-md shadow-black/50 ring-1 ring-brass/20">
-              <svg className="h-7 w-7" viewBox="0 0 48 48" fill="none">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-brass/70 bg-gradient-to-br from-[#18231c] via-[#0e1612] to-[#050806] shadow-lg shadow-black/70 ring-1 ring-brass/30 overflow-hidden">
+              <svg className="h-9 w-9" viewBox="0 0 128 128" fill="none">
                 <defs>
-                  <linearGradient id="headerGold" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#F2DD9D" />
-                    <stop offset="50%" stopColor="#D7B15A" />
-                    <stop offset="100%" stopColor="#9C7726" />
+                  <linearGradient id="vGoldFacetLight" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#FFFDF5" />
+                    <stop offset="40%" stopColor="#F5D77F" />
+                    <stop offset="100%" stopColor="#D4AF37" />
                   </linearGradient>
-                  <linearGradient id="headerNeon" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stopColor="#7DCEA0" />
-                    <stop offset="100%" stopColor="#27AE60" />
+                  <linearGradient id="vGoldFacetDark" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#D4AF37" />
+                    <stop offset="50%" stopColor="#9C7726" />
+                    <stop offset="100%" stopColor="#594008" />
+                  </linearGradient>
+                  <linearGradient id="vVajraCore" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stopColor="#6EE7B7" />
+                    <stop offset="50%" stopColor="#10B981" />
+                    <stop offset="100%" stopColor="#047857" />
+                  </linearGradient>
+                  <linearGradient id="vLightningGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#A7F3D0" />
+                    <stop offset="100%" stopColor="#34D399" />
                   </linearGradient>
                 </defs>
-                <line x1="12" y1="21" x2="12" y2="35" stroke="#D7B15A" strokeWidth="1.5" />
-                <rect x="10" y="24" width="4" height="7" rx="1" fill="#D7B15A" />
-                <line x1="20" y1="15" x2="20" y2="37" stroke="#A3B8AC" strokeWidth="1.5" />
-                <rect x="18" y="19" width="4" height="11" rx="1" fill="#E7EEE8" />
-                <line x1="28" y1="9" x2="28" y2="33" stroke="#7DCEA0" strokeWidth="1.5" />
-                <rect x="26" y="12" width="4" height="14" rx="1" fill="url(#headerNeon)" />
-                <path d="M 8 33 L 18 24 L 28 15 L 38 7" stroke="url(#headerGold)" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" />
-                <circle cx="38" cy="7" r="2.8" fill="#7DCEA0" stroke="#080C0A" strokeWidth="1" />
+                <g transform="translate(64, 64)">
+                  {/* Top & Bottom Spikes */}
+                  <polygon points="0,-46 8,-28 0,-20 -8,-28" fill="url(#vGoldFacetLight)" />
+                  <polygon points="0,-46 0,-20 8,-28" fill="url(#vGoldFacetDark)" />
+                  <polygon points="0,46 8,28 0,20 -8,28" fill="url(#vGoldFacetLight)" />
+                  <polygon points="0,46 0,20 -8,28" fill="url(#vGoldFacetDark)" />
+
+                  {/* Wings (V-shape) */}
+                  <polygon points="-36,-32 -20,-12 -12,-20 -28,-36" fill="url(#vGoldFacetLight)" />
+                  <polygon points="-36,-32 -20,-12 -28,-36" fill="url(#vGoldFacetDark)" opacity="0.4" />
+                  <polygon points="-36,32 -20,12 -12,20 -28,36" fill="url(#vGoldFacetLight)" />
+                  <polygon points="-36,32 -20,12 -28,36" fill="url(#vGoldFacetDark)" opacity="0.4" />
+
+                  <polygon points="36,-32 20,-12 12,-20 28,-36" fill="url(#vGoldFacetDark)" />
+                  <polygon points="36,-32 20,-12 28,-36" fill="url(#vGoldFacetLight)" opacity="0.6" />
+                  <polygon points="36,32 20,12 12,20 28,32" fill="url(#vGoldFacetDark)" />
+                  <polygon points="36,32 20,12 28,32" fill="url(#vGoldFacetLight)" opacity="0.6" />
+
+                  {/* Central Hub */}
+                  <circle cx="0" cy="0" r="18" fill="url(#vGoldFacetDark)" stroke="#F5D77F" strokeWidth="1.5" />
+                  <circle cx="0" cy="0" r="13" fill="#0C1510" />
+
+                  {/* Emerald Energy Core */}
+                  <polygon points="0,-12 12,0 0,12 -12,0" fill="url(#vVajraCore)" />
+                  <polygon points="0,-12 12,0 0,0" fill="#A7F3D0" opacity="0.75" />
+
+                  {/* Lightning Axis */}
+                  <line x1="0" y1="-38" x2="0" y2="38" stroke="url(#vLightningGlow)" strokeWidth="2.5" strokeLinecap="round" />
+                  <circle cx="0" cy="0" r="3.5" fill="#FFFFFF" />
+                </g>
               </svg>
             </div>
             <div>
