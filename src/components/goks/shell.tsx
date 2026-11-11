@@ -43,6 +43,7 @@ import { AutoHealBoundary } from "@/components/goks/auto-heal-boundary";
 import { CommandPalette } from "@/components/goks/command-palette";
 import { useGlobalTerminalHotkeys } from "@/components/goks/use-hotkeys";
 import { globalFeedCircuitBreaker } from "@/lib/goks/circuit-breaker";
+import { AccessControlModal } from "@/components/goks/access-control-modal";
 
 const NAV: Array<{ group: string; items: Array<[SectionId, string]> }> = [
   {
@@ -361,6 +362,7 @@ function Desk() {
   const [hydrated, setHydrated] = useState(false);
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
+  const [isAccessModalOpen, setIsAccessModalOpen] = useState(false);
 
   const qc = useQueryClient();
   const book = useBook();
@@ -498,6 +500,14 @@ function Desk() {
               title="View Keyboard Shortcuts (Press ?)"
             >
               <span>⌨ ?</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsAccessModalOpen(true)}
+              className="flex items-center gap-1.5 rounded border border-brass/40 bg-panel px-2.5 py-2 font-mono text-xs text-brass hover:bg-brass hover:text-ink transition-colors cursor-pointer shadow-sm"
+              title="Share 1-Click Access Link or Change Security Passcode"
+            >
+              <span>🔒 Link Access</span>
             </button>
           </div>
         </div>
@@ -664,6 +674,12 @@ function Desk() {
           </div>
         </div>
       )}
+
+      {/* Institutional Link Access & Passcode Modal */}
+      <AccessControlModal
+        isOpen={isAccessModalOpen}
+        onClose={() => setIsAccessModalOpen(false)}
+      />
     </div>
   );
 }
