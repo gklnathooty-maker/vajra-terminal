@@ -289,7 +289,8 @@ export function handleDataFeedRequest(request: Request): Response {
     });
   }
 
-  const format = url.searchParams.get("format")?.toLowerCase() || (url.pathname.endsWith(".json") ? "json" : "json");
+  const isCsvPath = url.pathname.endsWith(".csv");
+  const format = url.searchParams.get("format")?.toLowerCase() || (isCsvPath ? "csv" : "json");
   const type = url.searchParams.get("type")?.toLowerCase() || "all";
 
   const payload = buildDataFeedPayload();
