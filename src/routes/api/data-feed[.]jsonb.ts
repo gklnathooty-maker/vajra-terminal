@@ -9,3 +9,4 @@ export const Route = createFileRoute("/api/data-feed.jsonb")({
     },
   },
 });
+
