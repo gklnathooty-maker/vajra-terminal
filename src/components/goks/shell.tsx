@@ -363,6 +363,18 @@ function Desk() {
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [isAccessModalOpen, setIsAccessModalOpen] = useState(false);
+  const [isOnline, setIsOnline] = useState(typeof navigator !== "undefined" ? navigator.onLine : true);
+
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
 
   const qc = useQueryClient();
   const book = useBook();
@@ -475,9 +487,20 @@ function Desk() {
               </p>
               <div className="flex items-center gap-2 mt-0.5">
                 <span className="font-mono text-xs text-muted">NSE + BSE INDIA</span>
+                {isOnline ? (
+                  <span className="inline-flex items-center gap-1 rounded border border-emerald-500/40 bg-emerald-950/20 px-1.5 py-0.5 font-mono text-[10px] text-emerald-400">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    Live Online Sync
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1 rounded border border-amber-500/50 bg-amber-950/40 px-1.5 py-0.5 font-mono text-[10px] text-amber-300">
+                    <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
+                    Offline Workstation Active
+                  </span>
+                )}
                 <span className="inline-flex items-center gap-1 rounded border border-sage/40 bg-sage/10 px-1.5 py-0.5 font-mono text-[10px] text-sage">
-                  <span className="h-1.5 w-1.5 rounded-full bg-sage animate-pulse" />
-                  Zero-Crash Circuit: Normal
+                  <span className="h-1.5 w-1.5 rounded-full bg-sage" />
+                  Circuit: Normal
                 </span>
               </div>
             </div>

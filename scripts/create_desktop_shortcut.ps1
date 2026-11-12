@@ -23,3 +23,4 @@ $s2.Description = "VAJRA TERMINAL - Institutional Quantitative Workstation"
 $s2.Save()
 
 Write-Host "Created VAJRA TERMINAL shortcut on Desktop and in folder with custom Vajra Icon!"
+
