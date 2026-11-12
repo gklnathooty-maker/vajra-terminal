@@ -12,15 +12,26 @@ $s1.IconLocation = "$icoPath,0"
 $s1.Description = "VAJRA TERMINAL - Institutional Quantitative Workstation"
 $s1.Save()
 
-# 2. Windows Desktop shortcut
-$desktop = [System.Environment]::GetFolderPath('Desktop')
-$s2 = $WshShell.CreateShortcut((Join-Path $desktop "VAJRA TERMINAL.lnk"))
-$s2.TargetPath = "wscript.exe"
-$s2.Arguments = "`"$vbsPath`""
-$s2.WorkingDirectory = $currentDir
-$s2.IconLocation = "$icoPath,0"
-$s2.Description = "VAJRA TERMINAL - Institutional Quantitative Workstation"
-$s2.Save()
+# 2. Windows Desktop shortcuts (handles standard and OneDrive Desktop)
+$destinations = @(
+    [System.Environment]::GetFolderPath('Desktop'),
+    "C:\Users\hp\Desktop",
+    "C:\Users\hp\OneDrive\Desktop"
+) | Select-Object -Unique
 
-Write-Host "Created VAJRA TERMINAL shortcut on Desktop and in folder with custom Vajra Icon!"
+foreach ($dest in $destinations) {
+    if (Test-Path $dest) {
+        $lnkPath = Join-Path $dest "VAJRA TERMINAL.lnk"
+        $s = $WshShell.CreateShortcut($lnkPath)
+        $s.TargetPath = "wscript.exe"
+        $s.Arguments = "`"$vbsPath`""
+        $s.WorkingDirectory = $currentDir
+        $s.IconLocation = "$icoPath,0"
+        $s.Description = "VAJRA TERMINAL - Institutional Quantitative Workstation"
+        $s.Save()
+        Write-Host "Created shortcut: $lnkPath"
+    }
+}
+
+Write-Host "Successfully configured VAJRA TERMINAL shortcuts with custom Vajra Icon!"
 

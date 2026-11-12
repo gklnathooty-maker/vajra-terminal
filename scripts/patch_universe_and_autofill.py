@@ -110,3 +110,4 @@ if new_base_entries:
     print("Updated src/lib/goks/autofill.ts with base prices!")
 
 print("All patches completed successfully!")
+

@@ -128,3 +128,4 @@ with open("scripts/indices_data.json", "w", encoding="utf-8") as f:
         "missing_tickers": list(missing_in_nse)
     }, f, indent=2)
 print("Saved indices_data.json successfully")
+
