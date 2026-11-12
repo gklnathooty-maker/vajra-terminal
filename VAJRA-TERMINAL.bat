@@ -1,4 +1,5 @@
 @echo off
 title VAJRA TERMINAL Launcher
-wscript.exe "%~dp0VAJRA-TERMINAL.vbs"
-
+cd /d "%~dp0"
+start "" wscript.exe "%~dp0VAJRA-TERMINAL.vbs"
+exit
