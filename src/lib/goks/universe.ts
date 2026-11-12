@@ -28,6 +28,10 @@ export const INDICES: Instrument[] = [
   { symbol: "^CNXREALTY", ticker: "REALTY", exchange: "INDEX", sector: "Index", name: "NIFTY REALTY", kind: "index" },
   { symbol: "^BSE100", ticker: "BSE100", exchange: "INDEX", sector: "Index", name: "S&P BSE 100", kind: "index" },
   { symbol: "^PENNY", ticker: "PENNY", exchange: "INDEX", sector: "Penny Stocks", name: "NSE & BSE Penny Stocks (< ₹50)", kind: "index" },
+  { symbol: "^CNXSC", ticker: "SMALLCAP", exchange: "INDEX", sector: "Index", name: "NIFTY SMALLCAP 100", kind: "index" },
+  { symbol: "^NSELM250", ticker: "LARGEMID250", exchange: "INDEX", sector: "Index", name: "NIFTY LARGEMIDCAP 250", kind: "index" },
+  { symbol: "^NSEMS400", ticker: "MIDSMALL400", exchange: "INDEX", sector: "Index", name: "NIFTY MIDSMALLCAP 400", kind: "index" },
+  { symbol: "^NSEMDCP150", ticker: "MIDCAP150", exchange: "INDEX", sector: "Index", name: "NIFTY MIDCAP 150", kind: "index" },
 ];
 
 /** Liquid NSE & BSE book encompassing all liquid equities across Indian markets. */
@@ -550,6 +554,37 @@ export const INDEX_CONSTITUENTS: Record<string, ConstituentStock[]> = {
     "ULTRACEMCO", "BEL", "HAL", "TMPV", "COALINDIA", "ONGC", "TRENT", "ETERNAL",
     "SUZLON", "TATAPOWER", "BHEL", "SAIL",
   ], "BSE"),
+  "^CNXSC": makeConstituents([
+    "SUZLON", "IRFC", "RVNL", "HUDCO", "IREDA", "MAZDOCK", "COCHINSHIP", "GRSE",
+    "BEML", "TITAGARH", "RAILTEL", "RITES", "IRCON", "NBCC", "CENTRALBK", "UCOBANK",
+    "IOB", "MAHABANK", "UJJIVANSFB", "EQUITASBNK", "SOUTHBANK", "IDFCFIRSTB", "YESBANK",
+    "ALOKINDS", "TRIDENT", "HFCL", "LLOYDSENGG", "MARKSANS", "SUBEX", "INFIBEAM",
+    "PCJEWELLER", "KALYANKJIL", "RADICO", "CDSL", "ANGELONE", "BSE", "BCG", "URJA",
+    "VIKASLIFE", "EASEMYTRIP", "HCC", "DISHTV", "JPASSOCIAT", "RPOWER", "JPPOWER",
+  ]),
+  "^NSELM250": makeConstituents([
+    "RELIANCE", "TCS", "HDFCBANK", "ICICIBANK", "BHARTIARTL", "INFY", "ITC", "SBIN",
+    "LT", "HINDUNILVR", "AXISBANK", "KOTAKBANK", "M&M", "MARUTI", "SUNPHARMA", "TITAN",
+    "BAJFINANCE", "BAJAJFINSV", "TATASTEEL", "NTPC", "POWERGRID", "ASIANPAINT",
+    "TRENT", "BEL", "HAL", "POLYCAB", "MAXHEALTH", "ETERNAL", "INDIGO", "DLF",
+    "SIEMENS", "DMART", "PIDILITIND", "AMBUJACEM", "SUZLON", "TATAPOWER", "IRFC",
+    "RVNL", "BHEL", "SAIL", "NMDC", "PERSISTENT", "COFORGE", "LTIM", "MUTHOOTFIN",
+  ]),
+  "^NSEMS400": makeConstituents([
+    "TRENT", "BEL", "HAL", "POLYCAB", "MAXHEALTH", "ETERNAL", "INDIGO", "DLF",
+    "SIEMENS", "DMART", "PIDILITIND", "AMBUJACEM", "SUZLON", "TATAPOWER", "IRFC",
+    "RVNL", "BHEL", "SAIL", "NMDC", "PERSISTENT", "COFORGE", "LTIM", "HUDCO", "IREDA",
+    "MAZDOCK", "COCHINSHIP", "GRSE", "BEML", "TITAGARH", "RAILTEL", "CDSL", "ANGELONE",
+    "BSE", "KALYANKJIL", "UJJIVANSFB", "EQUITASBNK", "SOUTHBANK", "IDFCFIRSTB", "YESBANK",
+    "PNB", "CANBK", "BANKBARODA", "FEDERALBNK",
+  ]),
+  "^NSEMDCP150": makeConstituents([
+    "TRENT", "BEL", "HAL", "POLYCAB", "MAXHEALTH", "ETERNAL", "INDIGO", "DLF",
+    "SIEMENS", "DMART", "PIDILITIND", "AMBUJACEM", "SUZLON", "TATAPOWER", "IRFC",
+    "RVNL", "BHEL", "SAIL", "NMDC", "PERSISTENT", "COFORGE", "LTIM", "MUTHOOTFIN",
+    "POONAWALLA", "CHOLAFIN", "ASHOKLEY", "BHARATFORG", "ESCORTS", "MOTHERSON",
+    "AUROPHARMA", "LUPIN", "ZYDUSLIFE", "MANKIND", "APLAPOLLO", "JINDALSTEL",
+  ]),
 };
 
 export function getConstituentsForIndex(symbol: string): ConstituentStock[] {
@@ -578,6 +613,10 @@ export function asNseCode(raw: string): string | null {
   const code = raw.trim().toUpperCase().replace(/\s+/g, "");
   if (code === "VIX" || code === "INDIAVIX" || code === "^VIX") return "^INDIAVIX";
   if (code === "GIFT" || code === "GIFTNIFTY" || code === "SGXNIFTY" || code === "^GIFT") return "^GIFTNIFTY";
+  if (code === "SMALLCAP" || code === "NIFTYSMLCAP" || code === "SMALLCAP100") return "^CNXSC";
+  if (code === "LARGEMID" || code === "LARGEMIDCAP" || code === "LARGEMID250") return "^NSELM250";
+  if (code === "MIDSMALL" || code === "MIDSMALLCAP" || code === "MIDSMALL400") return "^NSEMS400";
+  if (code === "MIDCAP150") return "^NSEMDCP150";
   if (code === "TATAMOTORS" || code === "TATAMOTOR" || code === "TATAPV" || code === "TATAMOTORS.NS") return "TMPV.NS";
   if (code === "ZOMATO" || code === "ZOMATO.NS") return "ETERNAL.NS";
   if (code === "PCJ" || code === "PCJ.NS" || code === "PCJEWELLER" || code === "PCJEWELLERS") return "PCJEWELLER.NS";
