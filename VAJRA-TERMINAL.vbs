@@ -1,51 +1,63 @@
 ' ==============================================================================
 ' VAJRA TERMINAL - Native Desktop Workstation Launcher
-' Opens as a true standalone desktop application window (Online & Offline)
+' Works 100% Online & Offline
 ' ==============================================================================
+Option Explicit
+Dim WshShell, fso, scriptDir, appUrl, browserExe, path, candidates
+Dim i, isRunning, launchCmd
+
 Set WshShell = CreateObject("WScript.Shell")
 Set fso = CreateObject("Scripting.FileSystemObject")
 scriptDir = fso.GetParentFolderName(WScript.ScriptFullName)
 
-' 1. Helper to probe local server responsiveness
-Function IsServerRunning()
+appUrl = "http://localhost:8080/?key=VAJRA2026"
+
+' 1. Fast & reliable offline/online loopback probe using native Windows curl.exe
+Function IsServerResponsive()
+    Dim cmd, code
     On Error Resume Next
-    Set http = CreateObject("MSXML2.ServerXMLHTTP.6.0")
-    http.setTimeouts 800, 800, 800, 800
-    http.open "GET", "http://127.0.0.1:8080/", False
-    http.send
-    If Err.Number = 0 And (http.status >= 200 And http.status < 400) Then
-        IsServerRunning = True
+    cmd = "cmd.exe /c curl.exe -s -o NUL -f --max-time 1 http://127.0.0.1:8080/"
+    code = WshShell.Run(cmd, 0, True)
+    If Err.Number = 0 And code = 0 Then
+        IsServerResponsive = True
     Else
-        IsServerRunning = False
+        IsServerResponsive = False
     End If
     On Error GoTo 0
 End Function
 
-' 2. Start background workstation engine if not running
-If Not IsServerRunning() Then
-    WshShell.Run "cmd /c cd /d """ & scriptDir & """ && npm run dev", 0, False
+' 2. Start workstation server if not responsive
+If Not IsServerResponsive() Then
+    WshShell.CurrentDirectory = scriptDir
+    WshShell.Run "cmd.exe /c npm.cmd run dev", 0, False
     
-    ' Wait until local workstation engine is responsive (up to 15s)
-    For i = 1 To 25
-        WScript.Sleep 600
-        If IsServerRunning() Then Exit For
+    ' Poll until server is ready (wait up to 35 seconds for cold start/bundling)
+    isRunning = False
+    For i = 1 To 70
+        WScript.Sleep 500
+        If IsServerResponsive() Then
+            isRunning = True
+            Exit For
+        End If
     Next
+    
+    ' Extra safety margin to allow routes to bind
+    If isRunning Then
+        WScript.Sleep 400
+    End If
 End If
 
 ' 3. Detect standalone desktop browser runtime (Edge or Chrome in Native App mode)
-Dim appUrl, browserExe, dataDir
-appUrl = "http://localhost:8080/?key=VAJRA2026"
-appData = WshShell.ExpandEnvironmentStrings("%APPDATA%")
-dataDir = appData & "\vajra-terminal-desktop"
-
-browserExe = ""
 candidates = Array( _
     "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe", _
     "C:\Program Files\Microsoft\Edge\Application\msedge.exe", _
     "C:\Program Files\Google\Chrome\Application\chrome.exe", _
-    "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" _
+    "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe", _
+    WshShell.ExpandEnvironmentStrings("%LOCALAPPDATA%") & "\Microsoft\Edge\Application\msedge.exe", _
+    WshShell.ExpandEnvironmentStrings("%LOCALAPPDATA%") & "\Google\Chrome\Application\chrome.exe" _
 )
 
+browserExe = ""
 For Each path In candidates
     If fso.FileExists(path) Then
         browserExe = path
@@ -53,12 +65,10 @@ For Each path In candidates
     End If
 Next
 
-' 4. Launch in Native Desktop Window Mode (No browser bars, no tabs, native window)
+' 4. Launch in Native Desktop Window Mode (No browser chrome, native desktop workstation frame)
 If browserExe <> "" Then
-    Dim launchCmd
-    launchCmd = """" & browserExe & """ --app=""" & appUrl & """ --window-size=1440,920 --user-data-dir=""" & dataDir & """ --disable-features=TranslateUI --disable-extensions --app-auto-launched"
+    launchCmd = """" & browserExe & """ --app=""" & appUrl & """ --window-size=1440,920 --disable-features=TranslateUI --disable-extensions --app-auto-launched"
     WshShell.Run launchCmd, 1, False
 Else
-    ' Fallback to default browser
     WshShell.Run appUrl, 1, False
 End If
