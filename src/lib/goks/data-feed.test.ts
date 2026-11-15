@@ -11,7 +11,7 @@ import {
 describe("data-feed-service (Option A: Institutional Power BI & Excel Add-on)", () => {
   it("buildDataFeedPayload constructs complete institutional payload with 500+ items", () => {
     const payload = buildDataFeedPayload();
-    assert.equal(payload.meta.feedName, "GOKS Institutional Live & EOD Executive Data Feed");
+    assert.equal(payload.meta.feedName, "VAJRA TERMINAL Institutional Live & EOD Executive Data Feed");
     assert.equal(payload.meta.supportedIntegrations.powerBiDesktop, "Direct Web Connector (Web.Contents)");
     assert.ok(payload.deliveryScanner.length > 500, "Should scan hundreds of stocks across NSE/BSE");
     assert.ok(payload.fiiDiiDailyFlow.length > 0, "Should include institutional flow history");

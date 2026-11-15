@@ -1,22 +1,41 @@
-"""
-VAJRA TERMINAL - Institutional Camarilla Pivot Engine
-=====================================================
-Calculates H1-H5 and L1-L5 levels, breakout triggers,
-mean-reversion zones, and automated trading signals.
+"""Camarilla pivot levels (H1-H5, L1-L5) and signals.
+
+Standard formulas, with R = High - Low of the PREVIOUS COMPLETED session:
+
+    H1 = C + 1.1*R/12      L1 = C - 1.1*R/12
+    H2 = C + 1.1*R/6       L2 = C - 1.1*R/6
+    H3 = C + 1.1*R/4       L3 = C - 1.1*R/4
+    H4 = C + 1.1*R/2       L4 = C - 1.1*R/2
+    H5 = (H/L) * C         L5 = C - (H5 - C)
+    Pivot = (H + L + C) / 3
+
+Fixes over the earlier design:
+  * H1, H2, L1, L2 are included (the earlier summary listed only H3-H5/L3-L5).
+  * Levels are computed from the last COMPLETED session only. Using the
+    current, still-forming bar would move the levels during the day and make
+    signals repaint.
 """
 
-from dataclasses import dataclass
-from typing import Dict, Optional, Literal
+from __future__ import annotations
 
-SignalType = Literal[
+from dataclasses import dataclass, asdict
+from datetime import date
+from typing import Optional
+
+import pandas as pd
+
+from .market import today_ist
+
+SIGNALS = (
     "BULLISH_BREAKOUT",
     "BEARISH_BREAKDOWN",
     "MEAN_REVERSION_BUY",
     "MEAN_REVERSION_SELL",
-    "CONSOLIDATION_NEUTRAL"
-]
+    "NEUTRAL",
+)
 
-@dataclass
+
+@dataclass(frozen=True)
 class CamarillaLevels:
     pivot: float
     h1: float
@@ -29,121 +48,97 @@ class CamarillaLevels:
     l3: float
     l4: float
     l5: float
-    range: float
-    ltp: float
-    signal: SignalType
-    target: float
-    stop_loss: float
-    risk_reward: float
-    summary: str
+    range_: float
+    source_date: Optional[date] = None   # session the H/L/C came from
 
-def calculate_camarilla(high: float, low: float, close: float, current_price: Optional[float] = None) -> CamarillaLevels:
-    """
-    Computes precise institutional Camarilla pivot points and active execution signals.
-    """
-    if high <= low or low <= 0:
-        # Fallback safeguard against corrupt bars
-        high = max(high, close * 1.01)
-        low = min(low, close * 0.99)
+    def to_dict(self) -> dict:
+        d = asdict(self)
+        d["source_date"] = str(self.source_date) if self.source_date else None
+        return d
 
-    c = close
+    def table(self) -> list[tuple[str, float, str]]:
+        """Rows (name, price, role) from highest to lowest, for display."""
+        return [
+            ("H5", self.h5, "Breakout target"),
+            ("H4", self.h4, "Bullish breakout above"),
+            ("H3", self.h3, "Resistance / short zone"),
+            ("H2", self.h2, ""),
+            ("H1", self.h1, ""),
+            ("Pivot", self.pivot, "Central pivot"),
+            ("L1", self.l1, ""),
+            ("L2", self.l2, ""),
+            ("L3", self.l3, "Support / long zone"),
+            ("L4", self.l4, "Bearish breakdown below"),
+            ("L5", self.l5, "Breakdown target"),
+        ]
+
+
+def camarilla_levels(
+    high: float, low: float, close: float, source_date: Optional[date] = None
+) -> CamarillaLevels:
+    high, low, close = float(high), float(low), float(close)
+    if not (low > 0 and high >= low):
+        raise ValueError("need 0 < low <= high")
+    if not (low <= close <= high):
+        raise ValueError("close must lie between low and high")
     r = high - low
-    ltp = current_price if current_price is not None else c
-    pivot = (high + low + c) / 3.0
-
-    # Resistances
-    h1 = c + (r * 1.1 / 12.0)
-    h2 = c + (r * 1.1 / 6.0)
-    h3 = c + (r * 1.1 / 4.0)       # Mean reversion sell zone
-    h4 = c + (r * 1.1 / 2.0)       # Bullish breakout trigger
-    h5 = (high / low) * c          # Ultimate breakout target
-
-    # Supports
-    l1 = c - (r * 1.1 / 12.0)
-    l2 = c - (r * 1.1 / 6.0)
-    l3 = c - (r * 1.1 / 4.0)       # Mean reversion buy zone
-    l4 = c - (r * 1.1 / 2.0)       # Bearish breakdown trigger
-    l5 = c - (h5 - c)              # Ultimate breakdown target
-
-    # Signal & Target determination
-    signal: SignalType = "CONSOLIDATION_NEUTRAL"
-    target = h3
-    stop_loss = l3
-    risk_reward = 1.5
-    summary = "Price oscillating within normal institutional range (L3-H3)."
-
-    if ltp >= h4:
-        signal = "BULLISH_BREAKOUT"
-        target = h5
-        stop_loss = h3
-        risk = max(ltp - stop_loss, 0.01)
-        reward = max(target - ltp, 0.01)
-        risk_reward = round(reward / risk, 2)
-        summary = f"Bullish H4 breakout confirmed above {h4:.2f}. Momentum target H5 {h5:.2f}."
-    elif ltp <= l4:
-        signal = "BEARISH_BREAKDOWN"
-        target = l5
-        stop_loss = l3
-        risk = max(stop_loss - ltp, 0.01)
-        reward = max(ltp - target, 0.01)
-        risk_reward = round(reward / risk, 2)
-        summary = f"Bearish L4 breakdown confirmed below {l4:.2f}. Downside target L5 {l5:.2f}."
-    elif ltp <= l3 * 1.005 and ltp >= l4:
-        signal = "MEAN_REVERSION_BUY"
-        target = h3
-        stop_loss = l4
-        risk = max(ltp - stop_loss, 0.01)
-        reward = max(target - ltp, 0.01)
-        risk_reward = round(reward / risk, 2)
-        summary = f"Support test at L3 {l3:.2f}. Mean-reversion long setup targeting H3 {h3:.2f}."
-    elif ltp >= h3 * 0.995 and ltp <= h4:
-        signal = "MEAN_REVERSION_SELL"
-        target = l3
-        stop_loss = h4
-        risk = max(stop_loss - ltp, 0.01)
-        reward = max(ltp - target, 0.01)
-        risk_reward = round(reward / risk, 2)
-        summary = f"Resistance test at H3 {h3:.2f}. Mean-reversion short setup targeting L3 {l3:.2f}."
-
+    h5 = high / low * close
     return CamarillaLevels(
-        pivot=round(pivot, 2),
-        h1=round(h1, 2),
-        h2=round(h2, 2),
-        h3=round(h3, 2),
-        h4=round(h4, 2),
-        h5=round(h5, 2),
-        l1=round(l1, 2),
-        l2=round(l2, 2),
-        l3=round(l3, 2),
-        l4=round(l4, 2),
-        l5=round(l5, 2),
-        range=round(r, 2),
-        ltp=round(ltp, 2),
-        signal=signal,
-        target=round(target, 2),
-        stop_loss=round(stop_loss, 2),
-        risk_reward=risk_reward,
-        summary=summary
+        pivot=(high + low + close) / 3.0,
+        h1=close + 1.1 * r / 12.0,
+        h2=close + 1.1 * r / 6.0,
+        h3=close + 1.1 * r / 4.0,
+        h4=close + 1.1 * r / 2.0,
+        h5=h5,
+        l1=close - 1.1 * r / 12.0,
+        l2=close - 1.1 * r / 6.0,
+        l3=close - 1.1 * r / 4.0,
+        l4=close - 1.1 * r / 2.0,
+        l5=close - (h5 - close),
+        range_=r,
+        source_date=source_date,
     )
 
-def to_dict(levels: CamarillaLevels) -> Dict[str, float]:
-    return {
-        "pivot": levels.pivot,
-        "h1": levels.h1,
-        "h2": levels.h2,
-        "h3": levels.h3,
-        "h4": levels.h4,
-        "h5": levels.h5,
-        "l1": levels.l1,
-        "l2": levels.l2,
-        "l3": levels.l3,
-        "l4": levels.l4,
-        "l5": levels.l5,
-        "range": levels.range,
-        "ltp": levels.ltp,
-        "signal": levels.signal,
-        "target": levels.target,
-        "stop_loss": levels.stop_loss,
-        "risk_reward": levels.risk_reward,
-        "summary": levels.summary
-    }
+
+def previous_completed_bar(bars: pd.DataFrame, as_of: Optional[date] = None) -> pd.Series:
+    """Last bar dated strictly BEFORE ``as_of`` (default: today, IST).
+
+    This excludes the session that is still forming. To get levels for the
+    NEXT session after the close, pass ``as_of`` = the next trading date.
+    """
+    as_of = as_of or today_ist()
+    done = bars[bars.index.normalize() < pd.Timestamp(as_of)]
+    if len(done) == 0:
+        raise ValueError(f"no completed bar before {as_of}")
+    return done.iloc[-1]
+
+
+def levels_for(bars: pd.DataFrame, as_of: Optional[date] = None) -> CamarillaLevels:
+    row = previous_completed_bar(bars, as_of)
+    return camarilla_levels(row["high"], row["low"], row["close"],
+                            source_date=row.name.date())
+
+
+def classify_signal(
+    close: float, levels: CamarillaLevels,
+    high: Optional[float] = None, low: Optional[float] = None,
+) -> str:
+    """Rules (checked in this order):
+
+    BULLISH_BREAKOUT     close > H4
+    BEARISH_BREAKDOWN    close < L4
+    MEAN_REVERSION_BUY   low <= L3 and close > L3   (dipped to support, closed back above)
+    MEAN_REVERSION_SELL  high >= H3 and close < H3  (poked resistance, closed back below)
+    NEUTRAL              otherwise
+    """
+    if close > levels.h4:
+        return "BULLISH_BREAKOUT"
+    if close < levels.l4:
+        return "BEARISH_BREAKDOWN"
+    low = close if low is None else low
+    high = close if high is None else high
+    if low <= levels.l3 and close > levels.l3:
+        return "MEAN_REVERSION_BUY"
+    if high >= levels.h3 and close < levels.h3:
+        return "MEAN_REVERSION_SELL"
+    return "NEUTRAL"

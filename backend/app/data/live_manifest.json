@@ -1,0 +1,9 @@
+{
+  "phase": "20",
+  "live_data_default": "disabled",
+  "primary": "NSE",
+  "secondary": "BSE",
+  "requires": "licensed exchange feed or authorized vendor",
+  "no_scraping": true,
+  "android_secret_policy": "never_embed_provider_credentials"
+}

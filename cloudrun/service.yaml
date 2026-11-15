@@ -1,0 +1,22 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: stock-intelligence-api
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: "0"
+        autoscaling.knative.dev/maxScale: "10"
+    spec:
+      containers:
+        - image: REGION-docker.pkg.dev/PROJECT/stock-intelligence/api:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: ENVIRONMENT
+              value: production
+          resources:
+            limits:
+              cpu: "2"
+              memory: "1Gi"

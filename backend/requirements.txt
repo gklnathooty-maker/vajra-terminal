@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+pydantic
+pydantic-settings
+firebase-admin
+sqlalchemy
+psycopg[binary]
+redis
+httpx
+python-dateutil
+fyers-apiv3

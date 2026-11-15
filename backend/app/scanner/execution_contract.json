@@ -1,0 +1,13 @@
+{
+  "version": "18.0",
+  "execution": "point_in_time",
+  "ranking_weights": {
+    "scanner_score": 0.45,
+    "momentum": 0.2,
+    "risk_reward": 0.15,
+    "quality": 0.1,
+    "mtf_alignment": 0.1
+  },
+  "provider_required_for_live_results": true,
+  "no_fake_results": true
+}

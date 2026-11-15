@@ -1,5 +1,3 @@
 @echo off
-title GOKS TERMINAL
-start "" "%~dp0GOKS-TERMINAL.vbs"
-exit
-
+cd /d "%~dp0"
+call VAJRA-TERMINAL.bat

@@ -13,7 +13,6 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiDataFeedRouteImport } from './routes/api/data-feed'
 import { Route as ApiDataFeedDotcsvRouteImport } from './routes/api/data-feed[.]csv'
 import { Route as ApiDataFeedDotjsonRouteImport } from './routes/api/data-feed[.]json'
-import { Route as ApiDataFeedDotjsonbRouteImport } from './routes/api/data-feed[.]jsonb'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -35,25 +34,18 @@ const ApiDataFeedDotjsonRoute = ApiDataFeedDotjsonRouteImport.update({
   path: '/api/data-feed.json',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiDataFeedDotjsonbRoute = ApiDataFeedDotjsonbRouteImport.update({
-  id: '/api/data-feed.jsonb',
-  path: '/api/data-feed.jsonb',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/api/data-feed': typeof ApiDataFeedRoute
   '/api/data-feed.csv': typeof ApiDataFeedDotcsvRoute
   '/api/data-feed.json': typeof ApiDataFeedDotjsonRoute
-  '/api/data-feed.jsonb': typeof ApiDataFeedDotjsonbRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/api/data-feed': typeof ApiDataFeedRoute
   '/api/data-feed.csv': typeof ApiDataFeedDotcsvRoute
   '/api/data-feed.json': typeof ApiDataFeedDotjsonRoute
-  '/api/data-feed.jsonb': typeof ApiDataFeedDotjsonbRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -61,30 +53,19 @@ export interface FileRoutesById {
   '/api/data-feed': typeof ApiDataFeedRoute
   '/api/data-feed.csv': typeof ApiDataFeedDotcsvRoute
   '/api/data-feed.json': typeof ApiDataFeedDotjsonRoute
-  '/api/data-feed.jsonb': typeof ApiDataFeedDotjsonbRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/'
-    | '/api/data-feed'
-    | '/api/data-feed.csv'
-    | '/api/data-feed.json'
-    | '/api/data-feed.jsonb'
+    '/' | '/api/data-feed' | '/api/data-feed.csv' | '/api/data-feed.json'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/api/data-feed'
-    | '/api/data-feed.csv'
-    | '/api/data-feed.json'
-    | '/api/data-feed.jsonb'
+  to: '/' | '/api/data-feed' | '/api/data-feed.csv' | '/api/data-feed.json'
   id:
     | '__root__'
     | '/'
     | '/api/data-feed'
     | '/api/data-feed.csv'
     | '/api/data-feed.json'
-    | '/api/data-feed.jsonb'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -92,7 +73,6 @@ export interface RootRouteChildren {
   ApiDataFeedRoute: typeof ApiDataFeedRoute
   ApiDataFeedDotcsvRoute: typeof ApiDataFeedDotcsvRoute
   ApiDataFeedDotjsonRoute: typeof ApiDataFeedDotjsonRoute
-  ApiDataFeedDotjsonbRoute: typeof ApiDataFeedDotjsonbRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -125,13 +105,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiDataFeedDotjsonRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/data-feed.jsonb': {
-      id: '/api/data-feed.jsonb'
-      path: '/api/data-feed.jsonb'
-      fullPath: '/api/data-feed.jsonb'
-      preLoaderRoute: typeof ApiDataFeedDotjsonbRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -140,7 +113,6 @@ const rootRouteChildren: RootRouteChildren = {
   ApiDataFeedRoute: ApiDataFeedRoute,
   ApiDataFeedDotcsvRoute: ApiDataFeedDotcsvRoute,
   ApiDataFeedDotjsonRoute: ApiDataFeedDotjsonRoute,
-  ApiDataFeedDotjsonbRoute: ApiDataFeedDotjsonbRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

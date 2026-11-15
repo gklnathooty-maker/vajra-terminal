@@ -102,7 +102,7 @@ export function buildDataFeedPayload(): DataFeedPayload {
 
   return {
     meta: {
-      feedName: "GOKS Institutional Live & EOD Executive Data Feed",
+      feedName: "VAJRA TERMINAL Institutional Live & EOD Executive Data Feed",
       engine: "Native Sub-10ms Quantitative Engine (TypeScript / TanStack / Canvas)",
       version: "3.2.0-institutional",
       asOf: summary.asOf,

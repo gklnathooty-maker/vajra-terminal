@@ -1,0 +1,49 @@
+{
+  "version": "17.0",
+  "timeframes": [
+    "5m",
+    "15m",
+    "1h",
+    "1d",
+    "1w",
+    "1mo"
+  ],
+  "group_modes": [
+    "ALL",
+    "ANY",
+    "NONE"
+  ],
+  "operators": [
+    ">",
+    ">=",
+    "<",
+    "<=",
+    "==",
+    "!=",
+    "CROSSES_ABOVE",
+    "CROSSES_BELOW"
+  ],
+  "fields": [
+    "open",
+    "high",
+    "low",
+    "close",
+    "volume",
+    "ema20",
+    "ema50",
+    "ema200",
+    "rsi14",
+    "macd",
+    "adx14",
+    "vwap",
+    "volume_ratio",
+    "rr",
+    "momentum",
+    "technical_score",
+    "quality_rank"
+  ],
+  "safety": {
+    "evaluate_only_closed_bars": true,
+    "point_in_time_data_required": true
+  }
+}

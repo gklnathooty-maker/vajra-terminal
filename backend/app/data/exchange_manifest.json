@@ -1,0 +1,18 @@
+{
+  "version": "19.0",
+  "primary_exchange": "NSE",
+  "secondary_exchange": "BSE",
+  "live_enabled": false,
+  "canonical_identity": "ISIN",
+  "requirements": {
+    "nse": "licensed_direct_or_authorized_vendor",
+    "bse": "licensed_direct_or_authorized_vendor"
+  },
+  "supported_data": {
+    "quotes": true,
+    "candles": true,
+    "historical": true,
+    "corporate_actions": "adapter",
+    "market_depth": "provider_dependent"
+  }
+}

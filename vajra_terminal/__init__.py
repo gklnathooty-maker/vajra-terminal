@@ -1,10 +1,8 @@
-"""
-VAJRA TERMINAL - Institutional Quantitative Workstation
-======================================================
-Python Architecture for Indian Equities (NSE + BSE)
-Supports 100% Online & Offline Execution, Camarilla Engine,
-Algo Trading, FII/DII Analytics, and Power BI Web Feeds.
+"""Vajra Terminal - Indian equity analysis workstation (Python engine).
+
+Design rule for this package: every number that leaves the engine carries its
+data source and timestamp, and simulated data can never be mistaken for real
+prices.
 """
 
-__version__ = "3.2.0-institutional"
-__author__ = "VAJRA Quantitative Systems"
+__version__ = "2.0.0"
