@@ -29,7 +29,14 @@ End Function
 ' 2. Start workstation server if not responsive
 If Not IsServerResponsive() Then
     WshShell.CurrentDirectory = scriptDir
-    WshShell.Run "cmd.exe /c npm.cmd run dev", 0, False
+    Dim nodeExe, startEngineCmd
+    If fso.FileExists(scriptDir & "\runtime\node.exe") Then
+        nodeExe = """" & scriptDir & "\runtime\node.exe"""
+    Else
+        nodeExe = "node"
+    End If
+    startEngineCmd = "cmd.exe /c " & nodeExe & " """ & scriptDir & "\scripts\with-app-env.mjs"" vite dev --host 0.0.0.0 --port 8080"
+    WshShell.Run startEngineCmd, 0, False
     
     ' Poll until server is ready (wait up to 35 seconds for cold start/bundling)
     isRunning = False

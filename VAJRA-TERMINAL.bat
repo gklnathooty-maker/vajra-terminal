@@ -17,7 +17,12 @@ if %errorlevel% equ 0 (
 )
 
 echo [2/3] Starting background workstation engine (TypeScript / TanStack / Canvas)...
-start /b "" npm.cmd run dev > NUL 2>&1
+if exist "%~dp0runtime\node.exe" (
+    set "NODE_BIN=%~dp0runtime\node.exe"
+) else (
+    set "NODE_BIN=node"
+)
+start /b "" "%NODE_BIN%" "%~dp0scripts\with-app-env.mjs" vite dev --host 0.0.0.0 --port 8080 > NUL 2>&1
 
 echo [*] Waiting for engine to initialize...
 for /l %%i in (1,1,35) do (
