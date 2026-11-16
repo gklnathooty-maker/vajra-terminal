@@ -13,12 +13,12 @@ export function useSelection() {
   const symbol = useDesk((s) => s.symbol);
   const listed = findRow(symbol, book.rated, book.bse, book.indices);
   const waitingOnBook = Boolean(findInstrument(symbol)) && book.status === "loading";
-  const quote = useQuote(symbol, !listed && !waitingOnBook);
+  const quote = useQuote(symbol, Boolean(symbol));
   const fallbackSnap =
     !listed && !quote.data && symbol && isChartSymbol(symbol)
       ? toAutofillSnap(findInstrument(symbol) || instrumentFromQuery(symbol)!)
       : null;
-  const row = listed ?? quote.data ?? fallbackSnap;
+  const row = quote.data ?? listed ?? fallbackSnap;
   const pending = !row && (waitingOnBook || quote.isLoading);
   return { ...book, symbol, row, quote, pending };
 }

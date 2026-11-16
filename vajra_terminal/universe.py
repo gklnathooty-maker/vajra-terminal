@@ -40,6 +40,7 @@ REFERENCE_PRICES: dict[str, float] = {
     "ICICIBANK": 1590.00,
     "SBIN": 1086.50,
     "BHARTIARTL": 2096.00,
+    "ABFRL": 38.35,
 }
 
 # A small demo list so the GUI has something to show before you load the

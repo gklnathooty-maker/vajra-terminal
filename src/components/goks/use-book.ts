@@ -11,7 +11,7 @@ export const BOARD_KEY = ["goks-board"] as const;
 const SNAPSHOT_KEY = "goks-board-snapshot-v1";
 const SNAPSHOT_MAX_AGE_MS = 7 * 24 * 3600 * 1000;
 const SNAPSHOT_MAX_CHARS = 3_000_000;
-const REFETCH_MS = 3 * 60 * 1000;
+const REFETCH_MS = 60_000;
 
 type Snapshot = { savedAt: number; board: Board };
 
@@ -68,11 +68,12 @@ export function useBoardQuery() {
     queryFn: () => fetchBoard(false),
     initialData: initial?.board,
     initialDataUpdatedAt: initial?.savedAt,
-    staleTime: 60_000,
+    staleTime: 30_000,
     // The server already retries each symbol and holds a cooldown after a failed pull, so more client retries only delay the answer.
     retry: 1,
     retryDelay: backoff,
     refetchInterval: REFETCH_MS,
+    refetchIntervalInBackground: true,
   });
 }
 
@@ -109,7 +110,9 @@ export function useQuote(symbol: string, enabled = true) {
     queryKey: ["goks-quote", symbol],
     queryFn: () => getQuote({ data: { symbol } }),
     enabled: Boolean(symbol) && enabled,
-    staleTime: 60_000,
+    staleTime: 30_000,
+    refetchInterval: REFETCH_MS,
+    refetchIntervalInBackground: true,
     retry: worthRetrying,
     retryDelay: backoff,
   });
@@ -120,7 +123,9 @@ export function useSeries(symbol: string, interval: SeriesPack["interval"]) {
     queryKey: ["goks-series", symbol, interval],
     queryFn: () => getSeries({ data: { symbol, interval } }),
     enabled: Boolean(symbol),
-    staleTime: 60_000,
+    staleTime: 30_000,
+    refetchInterval: REFETCH_MS,
+    refetchIntervalInBackground: true,
     retry: worthRetrying,
     retryDelay: backoff,
   });

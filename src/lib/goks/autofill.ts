@@ -34,6 +34,7 @@ export const BASE_PRICES: Record<string, number> = {
   "^NSEMDCP150": 21650.0,
   MIDCAP150: 21650.0,
   "5PAISA": 450.0,
+  "ABFRL": 38.35,
   "AFFLE": 450.0,
   "AHLUCONT": 450.0,
   "AIAENG": 450.0,
@@ -507,6 +508,7 @@ export function getBasePrice(symbol: string): number {
   const clean = symbol.replace(/\.(NS|BO)$/, "").replace(/^\^/, "");
   if (BASE_PRICES[symbol]) return BASE_PRICES[symbol];
   if (BASE_PRICES[clean]) return BASE_PRICES[clean];
+  if (clean === "ABFRL") return 38.35;
   if (clean === "TMPV" || clean === "TATAMOTORS") return 785.0;
   if (clean === "ETERNAL" || clean === "ZOMATO") return 265.0;
   if (clean === "UJJIVANSFB" || clean === "UJJIVAN") return 60.9;

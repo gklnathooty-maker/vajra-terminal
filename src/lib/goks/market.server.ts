@@ -31,10 +31,10 @@ export const limits = {
   concurrency: 10,
   cooldownMs: 15_000,
   backoffScale: 1,
-  ttlMs: 3 * 60 * 1000,
+  ttlMs: 60_000,
   autofill: true,
 };
-const SERIES_TTL_MS = 3 * 60 * 1000;
+const SERIES_TTL_MS = 60_000;
 const SERIES_CACHE_MAX = 80;
 const BUDGET_MESSAGE = "Skipped after the book time budget";
 /** A live pull that returns fewer NSE names than this share of the book is treated as failed when a better board exists. */
@@ -45,7 +45,7 @@ let cache: Cache | null = null;
 let lastGood: Board | null = null;
 let inflight: Promise<Board> | null = null;
 let lastFailure: { at: number; message: string } | null = null;
-const quoteCache = new Map<string, { at: number; snap: Snap }>();
+const quoteCache = new Map<string, { at: number; snap: Snap; isAutofill?: boolean }>();
 const seriesCache = new Map<string, { at: number; pack: SeriesPack }>();
 
 /** Resets module state. Tests only. */
@@ -297,9 +297,7 @@ async function buildBoard(): Promise<Board> {
     rows = await mapPool(ALL_INSTRUMENTS, limits.concurrency, async (instrument) => {
       if (budget.signal.aborted) {
         if (limits.autofill) {
-          const snap = toAutofillSnap(instrument);
-          quoteCache.set(instrument.symbol, { at: Date.now(), snap });
-          return snap;
+          return toAutofillSnap(instrument);
         }
         failures.push({ symbol: instrument.symbol, error: BUDGET_MESSAGE });
         return null;
@@ -307,13 +305,11 @@ async function buildBoard(): Promise<Board> {
       try {
         const parsed = await fetchChart(instrument.symbol, "2y", "1d", false, budget.signal);
         const snap = toSnap(instrument, parsed);
-        quoteCache.set(instrument.symbol, { at: Date.now(), snap });
+        quoteCache.set(instrument.symbol, { at: Date.now(), snap, isAutofill: false });
         return snap;
       } catch (error) {
         if (limits.autofill) {
-          const snap = toAutofillSnap(instrument);
-          quoteCache.set(instrument.symbol, { at: Date.now(), snap });
-          return snap;
+          return toAutofillSnap(instrument);
         }
         failures.push({ symbol: instrument.symbol, error: error instanceof Error ? error.message : "Fetch failed" });
         return null;
@@ -394,19 +390,22 @@ function rowFor(symbol: string): Instrument {
   };
 }
 
-export async function loadQuote(symbol: string): Promise<Snap> {
+export async function loadQuote(symbol: string, force = false): Promise<Snap> {
   if (!isChartSymbol(symbol)) throw new Error("Use an NSE or BSE code, for example NMDC.NS.");
   const hit = quoteCache.get(symbol);
-  if (hit && Date.now() - hit.at < limits.ttlMs) return hit.snap;
+  if (!force && hit && !hit.isAutofill && Date.now() - hit.at < limits.ttlMs) return hit.snap;
   try {
     const parsed = await fetchChart(symbol, "2y", "1d", false);
     const snap = toSnap(rowFor(symbol), parsed);
-    quoteCache.set(symbol, { at: Date.now(), snap });
+    quoteCache.set(symbol, { at: Date.now(), snap, isAutofill: false });
     return snap;
   } catch (error) {
+    if (hit && !hit.isAutofill) {
+      return hit.snap;
+    }
     if (limits.autofill) {
       const snap = toAutofillSnap(rowFor(symbol));
-      quoteCache.set(symbol, { at: Date.now(), snap });
+      quoteCache.set(symbol, { at: Date.now(), snap, isAutofill: true });
       return snap;
     }
     throw error;
